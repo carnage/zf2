@@ -44,6 +44,10 @@ class FormAnnotationBuilderFactory implements FactoryInterface
                     $annotationBuilder->registerAnnotationListener($listener);
                 }
             }
+
+            if (isset($config['options'])) {
+                $annotationBuilder->setOptions($config['options']);
+            }
         }
 
         return $annotationBuilder;
