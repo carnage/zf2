@@ -55,6 +55,12 @@ class Date extends AbstractValidator
      */
     protected $format = self::FORMAT_DEFAULT;
 
+    /**
+     * Should a null date be considered valid
+     *
+     * @var bool
+     */
+    protected $allowNull = false;
 
     /**
      * Sets validator options
@@ -101,6 +107,24 @@ class Date extends AbstractValidator
     }
 
     /**
+     * @param boolean $allowNull
+     * @return $this
+     */
+    public function setAllowNull($allowNull)
+    {
+        $this->allowNull = $allowNull;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function allowNull()
+    {
+        return $this->allowNull;
+    }
+
+    /**
      * Returns true if $value is a DateTime instance or can be converted into one.
      *
      * @param  string|array|int|DateTime $value
@@ -109,6 +133,10 @@ class Date extends AbstractValidator
     public function isValid($value)
     {
         $this->setValue($value);
+
+        if (is_null($value) && $this->allowNull()) {
+            return true;
+        }
 
         if (!$this->convertToDateTime($value)) {
             $this->error(self::INVALID_DATE);

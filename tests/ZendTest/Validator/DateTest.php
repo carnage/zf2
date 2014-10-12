@@ -140,4 +140,10 @@ class DateTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($validator->getOption('messageVariables'),
                                      'messageVariables', $validator);
     }
+
+    public function testAllowsNullWhenFlagSet()
+    {
+        $this->validator->setAllowNull(true);
+        $this->assertTrue($this->validator->isValid(null));
+    }
 }
