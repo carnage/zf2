@@ -501,13 +501,17 @@ class Form extends Fieldset implements FormInterface
         }
 
         $filter->setData($this->data);
-        $filter->setValidationGroup(InputFilterInterface::VALIDATE_ALL);
 
         $validationGroup = $this->getValidationGroup();
-        if ($validationGroup !== null) {
-            $this->prepareValidationGroup($this, $this->data, $validationGroup);
-            $filter->setValidationGroup($validationGroup);
+        if ($validationGroup === null) {
+            $validationGroup = array();
+            $this->generateValidationGroup($this, $validationGroup);
+
+            var_dump($validationGroup);
         }
+
+        $this->prepareValidationGroup($this, $this->data, $validationGroup);
+        $filter->setValidationGroup($validationGroup);
 
         $this->isValid = $result = $filter->isValid();
         $this->hasValidated = true;
@@ -643,6 +647,28 @@ class Form extends Fieldset implements FormInterface
                 $data[$key] = array();
             }
             $this->prepareValidationGroup($fieldset, $data[$key], $validationGroup[$key]);
+        }
+    }
+
+    /**
+     * Generates a validation group for all elements in the form
+     *
+     * @param FieldsetInterface $formOrFieldset
+     * @param array $validationGroup
+     */
+    protected function generateValidationGroup(FieldsetInterface $formOrFieldset, array &$validationGroup)
+    {
+        foreach ($formOrFieldset->getElements() as $element) {
+            $validationGroup[] = $element->getName();
+        }
+
+        foreach ($formOrFieldset->getFieldsets() as $name => $fieldset) {
+            if ($fieldset instanceof Collection) {
+                $validationGroup[] = $fieldset->getName();
+            } else {
+                $validationGroup[$name] = array();
+                $this->generateValidationGroup($fieldset, $validationGroup[$name]);
+            }
         }
     }
 
